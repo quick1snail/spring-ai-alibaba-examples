@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author yuluo
  * @author <a href="mailto:yuluo08290126@gmail.com">yuluo</a>
+ *
+ * withModel的参数要参考 https://help.aliyun.com/zh/model-studio/getting-started/models
  */
 
 @RestController
@@ -51,11 +53,17 @@ public class DashScopeChatModelController {
 	 */
 	@GetMapping("/simple/chat")
 	public String simpleChat() {
-
-		return dashScopeChatModel.call(new Prompt(DEFAULT_PROMPT, DashScopeChatOptions
-				.builder()
-				.withModel("qwen2.5-vl-72b-instruct")
-				.build())).getResult().getOutput().getContent();
+		System.out.println("Dasd asd asd  d");
+		return dashScopeChatModel.call(
+				new Prompt(
+						DEFAULT_PROMPT,
+						DashScopeChatOptions.builder()
+								// .withModel("qwen2.5-vl-72b-instruct")
+								.withModel("qwen-plus")
+								.build())
+				).getResult()
+				.getOutput()
+				.getContent();
 	}
 
 	/**
@@ -70,7 +78,10 @@ public class DashScopeChatModelController {
 
 		Flux<ChatResponse> stream = dashScopeChatModel.stream(new Prompt(DEFAULT_PROMPT, DashScopeChatOptions
 				.builder()
-				.withModel("qwen2.5-vl-72b-instruct")
+				// 这里的参数要参考 https://help.aliyun.com/zh/model-studio/getting-started/models
+				// 下面这个原本代码里的模型名称似乎已下架
+				// .withModel("qwen2.5-vl-72b-instruct")
+				.withModel("qwen-plus")
 				.build()));
 		return stream.map(resp -> resp.getResult().getOutput().getContent());
 	}
@@ -83,13 +94,18 @@ public class DashScopeChatModelController {
 	@GetMapping("/custom/chat")
 	public String customChat() {
 
-		DashScopeChatOptions customOptions = DashScopeChatOptions.builder()
+		DashScopeChatOptions customOptions = DashScopeChatOptions
+				.builder()
 				.withTopP(0.7)
 				.withTopK(50)
 				.withTemperature(0.8)
 				.build();
 
-		return dashScopeChatModel.call(new Prompt(DEFAULT_PROMPT, customOptions)).getResult().getOutput().getContent();
+		return dashScopeChatModel.call(
+				new Prompt(
+						DEFAULT_PROMPT,
+						customOptions))
+				.getResult().getOutput().getContent();
 	}
 
 }
